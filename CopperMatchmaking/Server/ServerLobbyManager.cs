@@ -95,7 +95,7 @@ namespace CopperMatchmaking.Server
 
                 foreach (var client in steamIds)
                     Console.WriteLine(client);
-                Console.WriteLine($"Sent lobby to web server {response}");
+                Console.WriteLine($"Sent lobby to web server {response}  {SteamAPIHelper.SECRET_KEY}");
             }
             catch (Exception ex)
             {
