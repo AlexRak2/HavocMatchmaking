@@ -19,7 +19,7 @@ namespace CopperMatchmaking.Util
             {
                 try
                 {
-                    HttpResponseMessage response = reqType == "get" ? await client.GetAsync(url) : await client.GetAsync(_url);
+                    HttpResponseMessage response = reqType == "get" ? await client.GetAsync(url) : await client.GetAsync(url);
 
                     if (response.IsSuccessStatusCode)
                     {
