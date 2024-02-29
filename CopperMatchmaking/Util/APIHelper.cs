@@ -19,8 +19,8 @@ namespace CopperMatchmaking.Util
             {
                 try
                 {
-                    HttpResponseMessage response = reqType == "get" ? await client.GetAsync(url) : await client.GetAsync(url);
-                    Console.WriteLine(url);
+                    HttpResponseMessage response = reqType == "get" ? await client.GetAsync(url) : await client.PostAsync(_url, new StringContent(jsonBody, Encoding.UTF8, "application/json"));
+
                     if (response.IsSuccessStatusCode)
                     {
                         return await response.Content.ReadAsStringAsync();

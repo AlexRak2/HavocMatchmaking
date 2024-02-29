@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CopperMatchmaking.Data;
 using CopperMatchmaking.Info;
 using CopperMatchmaking.Util;
@@ -89,40 +88,20 @@ namespace CopperMatchmaking.Server
                 {
                     { "key", SteamAPIHelper.SECRET_KEY },
                     { "lobby_id", hostedLobbyId },
-                    { "clients", ConvertListToCsvLine(steamIds)}
+                    { "clients", steamIds}
                 };
 
                 string response = APIHelper.QueryApi(SteamAPIHelper.LOBBY_ENDPOINT, parameters, "post").GetAwaiter().GetResult();
 
                 foreach (var client in steamIds)
                     Console.WriteLine(client);
-                Console.WriteLine($"Sent lobby to web server {response}  {SteamAPIHelper.SECRET_KEY}");
+                Console.WriteLine($"Sent lobby to web server {response}");
             }
             catch (Exception ex)
             {
                 //Returns false if steam if is not valid, will be better once we authenticate user first
                 Console.WriteLine($"Exception during Steam API verification: {ex.Message}");
             }
-        }
-
-        static string ConvertListToCsvLine(List<string> dataList)
-        {
-            if (dataList == null || dataList.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            StringBuilder csvLine = new StringBuilder();
-            foreach (string data in dataList)
-            {
-                // Enclose data in double quotes to handle commas or special characters
-                csvLine.Append($"{data},");
-            }
-
-            // Remove the trailing comma
-            csvLine.Length--;
-
-            return csvLine.ToString();
         }
     }
 }
