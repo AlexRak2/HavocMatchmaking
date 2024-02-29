@@ -20,7 +20,7 @@ namespace CopperMatchmaking.Util
                 try
                 {
                     HttpResponseMessage response = reqType == "get" ? await client.GetAsync(url) : await client.GetAsync(url);
-
+                    Console.WriteLine(url);
                     if (response.IsSuccessStatusCode)
                     {
                         return await response.Content.ReadAsStringAsync();
