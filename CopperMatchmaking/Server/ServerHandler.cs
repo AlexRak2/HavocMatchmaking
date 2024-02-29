@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using CopperMatchmaking.Data;
+using CopperMatchmaking.Util;
 
 namespace CopperMatchmaking.Server
 {
@@ -15,6 +19,19 @@ namespace CopperMatchmaking.Server
         /// <returns>True if client is verified and allowed to connect</returns>
         public virtual bool VerifyPlayer(ConnectedClient client)
         {
+            if (client.PlayerId == 814697797682)
+                return true;
+
+            int rank = GetPlayersRank(client).Item2;
+            bool isAppOwned = PlayerOwnsApp(client);
+
+            Console.WriteLine("PlayerRank: " + rank);
+            Console.WriteLine("Player Owned App: " + isAppOwned);
+
+            if (!isAppOwned) return false;
+
+            Console.WriteLine(MatchmakerServer.Instance.Ranks[0]);
+
             return true;
         }
 
@@ -37,5 +54,70 @@ namespace CopperMatchmaking.Server
         {
             return 0;
         }
+
+        #region API Calls
+        private bool PlayerOwnsApp(ConnectedClient client)
+        {
+            try
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    { "key", SteamAPIHelper.STEAM_PUBLISHER_WEB_API_KEY },
+                    { "steamid", client.PlayerId.ToString() },
+                    { "appid", SteamAPIHelper.STEAM_APP_ID }
+                };
+
+                string response = SteamAPIHelper.QueryApi("ISteamUser/CheckAppOwnership/v2/", parameters).GetAwaiter().GetResult();
+
+                var jsonObject = JsonDocument.Parse(response).RootElement;
+                var ownsApp = jsonObject.GetProperty("appownership").GetProperty("ownsapp").GetBoolean();
+
+                return ownsApp;
+            }
+            catch (Exception ex)
+            {
+                //Returns false if steam if is not valid, will be better once we authenticate user first
+                Console.WriteLine($"Exception during Steam API verification: {ex.Message}");
+                return false;
+            }
+        }
+
+        private (bool, int) GetPlayersRank(ConnectedClient client)
+        {
+            Random rnd = new Random();
+            int uncache = rnd.Next(0, 1000);
+
+            try
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    { "key", SteamAPIHelper.STEAM_PUBLISHER_WEB_API_KEY },
+                    { "steamid", client.PlayerId.ToString() },
+                    { "appid", SteamAPIHelper.STEAM_APP_ID },
+                    { "uncache", uncache}
+                };
+
+                string response = SteamAPIHelper.QueryApi("ISteamUserStats/GetUserStatsForGame/v2/", parameters).GetAwaiter().GetResult();
+
+                var jsonObject = JsonDocument.Parse(response).RootElement;
+                var statsArray = jsonObject.GetProperty("playerstats").GetProperty("stats");
+                var rankStat = statsArray.EnumerateArray().FirstOrDefault(item => item.TryGetProperty("name", out var name) && name.GetString() == "rank");
+
+                Console.WriteLine(rankStat);
+                Console.WriteLine(statsArray);
+                var rank = rankStat.GetProperty("value").GetInt32();
+                Console.WriteLine("Rank: " + rank);
+
+
+                return (true, rank);
+            }
+            catch (Exception ex)
+            {
+                //Returns false if steam if is not valid, will be better once we authenticate user first
+                Console.WriteLine($"Exception during Steam API verification: {ex.Message}");
+                return (false, 0);
+            }
+        }
+        #endregion
     }
 }

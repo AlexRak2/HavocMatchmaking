@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CopperMatchmaking.Data;
 using CopperMatchmaking.Info;
+using CopperMatchmaking.Util;
 using Riptide;
 
 namespace CopperMatchmaking.Server
@@ -47,6 +48,8 @@ namespace CopperMatchmaking.Server
             
             Log.Info($"ConnectedClient[{lobbies[lobbyId][0].ConnectionId}] has responded with the join code of {hostedLobbyId}. Telling all clients of their lobby, and disconnecting them from the matchmaking server.");
 
+            List<string> steamIds = new List<string>();
+
             foreach (var client in lobbies[lobbyId].Where(client => !(lobbies[lobbyId].IndexOf(client) is 0)))
             {
                 var message = Message.Create(MessageSendMode.Reliable, MessageIds.ClientJoinCreatedLobby);
@@ -56,10 +59,13 @@ namespace CopperMatchmaking.Server
 
             foreach (var client in lobbies[lobbyId])
             {
+                steamIds.Add(client.PlayerId.ToString());
                 server.Server.DisconnectClient(client);
             }
 
             lobbies.Remove(lobbyId);
+            SendLobbyToWebServer(hostedLobbyId, steamIds);
+
         }
 
         internal void TimeoutCheck()
@@ -70,6 +76,31 @@ namespace CopperMatchmaking.Server
                 lobbies.Remove(lobby.LobbyId);
                 
                 server.QueueManager.ReturnLobby(lobby);
+            }
+        }
+
+
+        internal void SendLobbyToWebServer(string hostedLobbyId, List<string> steamIds)
+        {
+            try
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    { "key", SteamAPIHelper.SECRET_KEY },
+                    { "lobby_id", hostedLobbyId },
+                    { "clients", steamIds}
+                };
+
+                string response = APIHelper.QueryApi(SteamAPIHelper.LOBBY_ENDPOINT, parameters, "post").GetAwaiter().GetResult();
+
+                foreach (var client in steamIds)
+                    Console.WriteLine(client);
+                Console.WriteLine($"Sent lobby to web server {response}");
+            }
+            catch (Exception ex)
+            {
+                //Returns false if steam if is not valid, will be better once we authenticate user first
+                Console.WriteLine($"Exception during Steam API verification: {ex.Message}");
             }
         }
     }
