@@ -32,6 +32,8 @@ namespace CopperMatchmaking.Server
 
             Console.WriteLine(MatchmakerServer.Instance.Ranks[0]);
 
+            client.UpdateRank(ConvertRank(rank));
+
             return true;
         }
 
@@ -117,6 +119,36 @@ namespace CopperMatchmaking.Server
                 Console.WriteLine($"Exception during Steam API verification: {ex.Message}");
                 return (false, 0);
             }
+        }
+
+        private byte ConvertRank(int rank) 
+        {
+            if (rank >= 0 && rank < 150) 
+            {
+                return 0;
+            }
+            else if (rank >= 150 && rank < 300)
+            {
+                return 1;
+            }
+            else if (rank >= 300 && rank < 450)
+            {
+                return 2;
+            }
+            else if (rank >= 450 && rank < 600)
+            {
+                return 3;
+            }
+            else if (rank >= 600 && rank < 750)
+            {
+                return 4;
+            }
+            else if (rank >= 750 && rank < 900)
+            {
+                return 5;
+            }
+            return 0;
+
         }
         #endregion
     }
