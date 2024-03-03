@@ -42,9 +42,6 @@ namespace CopperMatchmaking.Server
                 var connectedClients = queue.Value.Take(lobbySize).ToList();
                 connectedClients.ForEach(client => queue.Value.Remove(client));
 
-                foreach (var client in connectedClients)
-                    Log.Info($"{client.PlayerId}");
-
                 PotentialLobbyFound?.Invoke(connectedClients.ToList(), queue.Key);
             }
         }
