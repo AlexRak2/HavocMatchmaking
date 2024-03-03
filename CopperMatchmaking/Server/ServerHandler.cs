@@ -104,9 +104,6 @@ namespace CopperMatchmaking.Server
                 var jsonObject = JsonDocument.Parse(response).RootElement;
                 var statsArray = jsonObject.GetProperty("playerstats").GetProperty("stats");
                 var rankStat = statsArray.EnumerateArray().FirstOrDefault(item => item.TryGetProperty("name", out var name) && name.GetString() == "rank");
-
-                Console.WriteLine(rankStat);
-                Console.WriteLine(statsArray);
                 var rank = rankStat.GetProperty("value").GetInt32();
                 Console.WriteLine("Rank: " + rank);
 

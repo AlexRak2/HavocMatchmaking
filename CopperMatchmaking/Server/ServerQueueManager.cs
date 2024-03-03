@@ -35,15 +35,16 @@ namespace CopperMatchmaking.Server
         {
             foreach (var queue in rankQueues)
             {
+                var testconnectedClients = queue.Value.Take(lobbySize).ToList();
+                foreach (var client in testconnectedClients)
+                    Log.Info($"{client.PlayerId}");
+
                 if (queue.Value.Count < lobbySize)
                     continue;
 
                 // takes a lobby size quantity of players and removes them from their queue
                 var connectedClients = queue.Value.Take(lobbySize).ToList();
                 connectedClients.ForEach(client => queue.Value.Remove(client));
-
-                foreach (var client in connectedClients)
-                    Log.Info($"{client.PlayerId}");
 
                 PotentialLobbyFound?.Invoke(connectedClients.ToList(), queue.Key);
             }
