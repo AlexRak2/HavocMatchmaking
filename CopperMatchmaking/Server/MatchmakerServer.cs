@@ -74,8 +74,6 @@ namespace CopperMatchmaking.Server
             queueManager.PotentialLobbyFound -= LobbyManager.PotentialLobbyFound;
             Server.ClientDisconnected -= queueManager.ClientDisconnected;
             Server.MessageReceived -= ServerMessageHandlers.ServerReceivedMessageHandler;
-                
-            SetInstance(null);
         }
 
         /// <summary>

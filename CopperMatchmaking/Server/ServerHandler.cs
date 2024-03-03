@@ -22,20 +22,9 @@ namespace CopperMatchmaking.Server
         /// Ran for when a lobby is created on the server
         /// </summary>
         /// <param name="lobbyClients">Clients in the lobby</param>
-        /// <param name="lobbyId">Id of the created lobby</param>
-        public virtual void LobbyCreated(List<ConnectedClient> lobbyClients, uint lobbyId)
+        public virtual void LobbyCreated(List<ConnectedClient> lobbyClients)
         {
             
-        }
-
-        /// <summary>
-        /// Functions for choosing who in a lobby should be the host
-        /// </summary>
-        /// <param name="lobbyClients">All the clients in the lobby</param>
-        /// <returns>Index of the list corresponding to who should host</returns>
-        public virtual int ChooseLobbyHost(List<ConnectedClient> lobbyClients)
-        {
-            return 0;
         }
     }
 }
