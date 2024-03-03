@@ -7,7 +7,9 @@ public static class Program
 {
     public static void Main()
     {
-        var server = new MatchmakerServer(4);
+        byte lobbySize = byte.Parse(Environment.GetEnvironmentVariable("LOBBY_SIZE") ?? "10");
+
+        var server = new MatchmakerServer(lobbySize);
         server.RegisterRanks(
             new Rank("Unranked", RankIds.Unranked), // 0
             new Rank("Bronze", RankIds.Bronze), // 1
@@ -22,5 +24,6 @@ public static class Program
         {
             server.Update();
         }
+        // ReSharper disable once FunctionNeverReturns
     }
 }
