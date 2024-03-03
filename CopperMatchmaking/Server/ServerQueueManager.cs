@@ -42,6 +42,7 @@ namespace CopperMatchmaking.Server
                 var connectedClients = queue.Value.Take(lobbySize).ToList();
                 connectedClients.ForEach(client => queue.Value.Remove(client));
 
+                Log.Info($"Removing client {connectedClients} due to being disconnected");
                 PotentialLobbyFound?.Invoke(connectedClients.ToList(), queue.Key);
             }
         }
