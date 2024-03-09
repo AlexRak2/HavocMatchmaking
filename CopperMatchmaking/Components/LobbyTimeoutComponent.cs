@@ -17,7 +17,7 @@ namespace CopperMatchmaking.Components
         /// <summary>
         /// Time in seconds that the host of a lobby has to send the join code for said lobby 
         /// </summary>
-        public float LobbyTimeoutTime = 5;
+        public float LobbyTimeoutTime = 50000000;
         
         /// <summary>
         /// Update the component
