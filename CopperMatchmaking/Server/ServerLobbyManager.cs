@@ -59,5 +59,37 @@ namespace CopperMatchmaking.Server
 
             lobbies.Remove(lobbyId);
         }
+        
+        internal void ClientDisconnected(object sender, ServerDisconnectedEventArgs args)
+        {
+            if (args.Reason != DisconnectReason.Kicked)
+                DisconnectClient(args.Client);
+        }
+
+        private void DisconnectClient(Connection connection)
+        {
+            foreach (var lobby in lobbies)
+            {
+                if(lobby.Key == connection.Id)
+                    RemoveLobby(connection, lobby.Value);
+
+                foreach (var client in lobby.Value.LobbyClients.Where(client => client.RiptideConnection.Id == connection.Id))
+                {
+                    RemoveLobby(client.RiptideConnection, lobby.Value);
+                }
+            }
+            
+            return;
+
+            void RemoveLobby(Connection clientConnection, CreatedLobby lobby)
+            {
+                Log.Info($"Removing lobby due to someone disconnect. | Client: {clientConnection.Id} | Lobby: {lobby.LobbyId}");
+                
+                lobbies.Remove(lobby.LobbyId);
+                
+                lobby.Skip(1).ToList().ForEach(server.QueueManager.RegisterPlayer);
+                server.QueueManager.RegisterPlayer(lobby[0]);
+            }
+        }
     }
 }
