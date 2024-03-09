@@ -118,9 +118,9 @@ namespace CopperMatchmaking.Server
             }
         }
 
-        private byte ConvertRank(int rank) 
+        private byte ConvertRank(int rank)
         {
-            if (rank >= 0 && rank < 150) 
+            if (rank >= 0 && rank < 150)
             {
                 return 0;
             }

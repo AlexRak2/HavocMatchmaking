@@ -10,7 +10,7 @@ namespace CopperMatchmaking.Server
     internal class ServerQueueManager
     {
         // byte is used here but its just the rank class
-        private readonly Dictionary<byte, List<ConnectedClient>> rankQueues = new Dictionary<byte, List<ConnectedClient>>();
+        internal readonly Dictionary<byte, List<ConnectedClient>> RankQueues = new Dictionary<byte, List<ConnectedClient>>();
 
         private readonly ushort lobbySize;
 
@@ -23,22 +23,18 @@ namespace CopperMatchmaking.Server
 
         internal void RegisterRanks(List<Rank> ranks)
         {
-            rankQueues.Clear();
+            RankQueues.Clear();
 
             foreach (var rank in ranks)
             {
-                rankQueues.Add(rank, new List<ConnectedClient>());
+                RankQueues.Add(rank, new List<ConnectedClient>());
             }
         }
 
         internal void CheckForLobbies()
         {
-            foreach (var queue in rankQueues)
+            foreach (var queue in RankQueues)
             {
-                var testconnectedClients = queue.Value.Take(lobbySize).ToList();
-                foreach (var client in testconnectedClients)
-                    Log.Info($"{client.PlayerId}");
-
                 if (queue.Value.Count < lobbySize)
                     continue;
 
@@ -52,7 +48,7 @@ namespace CopperMatchmaking.Server
 
         internal void RegisterPlayer(ConnectedClient client)
         {
-            rankQueues[client.Rank].Add(client);
+            RankQueues[client.Rank].Add(client);
             Log.Info($"Registered new client to {GetType().Name}");
         }
 
@@ -65,9 +61,9 @@ namespace CopperMatchmaking.Server
         
         internal void DisconnectClient(Connection connection)
         {
-            for (var i = 0; i < rankQueues.Values.ToList().Count; i++)
+            for (var i = 0; i < RankQueues.Values.ToList().Count; i++)
             {
-                var connectedClients = rankQueues.Values.ToList()[i];
+                var connectedClients = RankQueues.Values.ToList()[i];
                 
                 for (var ii = 0; ii < connectedClients.Count; ii++)
                 {
@@ -77,7 +73,7 @@ namespace CopperMatchmaking.Server
                         continue;
                     
                     Log.Info($"Removing client {connection.Id} due to being disconnected");
-                    rankQueues[(byte)i].RemoveAt(ii);
+                    RankQueues[(byte)i].RemoveAt(ii);
                 }
             }
         }
