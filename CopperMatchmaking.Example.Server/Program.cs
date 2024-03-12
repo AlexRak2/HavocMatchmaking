@@ -11,7 +11,7 @@ public static class Program
         var server = new MatchmakerServer(2)
         {
             new LobbyTimeoutComponent(),
-            // new InfoLoggerComponent()
+            new InfoLoggerComponent()
         };
 
         server.RegisterRanks(
