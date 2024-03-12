@@ -76,25 +76,41 @@ namespace CopperMatchmaking.Server
         {
             foreach (var lobby in Lobbies)
             {
-                if(lobby.Key == connection.Id)
+                if (lobby.Key == connection.Id)
+                {
                     RemoveLobby(connection, lobby.Value);
+                    return;
+                }
 
                 foreach (var client in lobby.Value.LobbyClients.Where(client => client.RiptideConnection.Id == connection.Id))
                 {
                     RemoveLobby(client.RiptideConnection, lobby.Value);
                 }
             }
-            
-            return;
+        }
 
-            void RemoveLobby(Connection clientConnection, CreatedLobby lobby)
+        internal void DisconnectedPlayerCheck()
+        {
+            foreach (var lobby in Lobbies.Values.ToList())
             {
-                Log.Info($"Removing lobby due to someone disconnect. | Client: {clientConnection.Id} | Lobby: {lobby.LobbyId}");
+                foreach (var client in lobby)
+                {
+                    if(!client.RiptideConnection.IsConnected)
+                        RemoveLobby(client.RiptideConnection, lobby);
+                }
+            }
+        }
+        
+        private void RemoveLobby(Connection clientConnection, CreatedLobby lobby)
+        {
+            Log.Info($"Removing lobby due to someone disconnecting. | Client: {clientConnection.Id} | Lobby: {lobby.LobbyId}");
                 
-                Lobbies.Remove(lobby.LobbyId);
-                
-                lobby.Skip(1).ToList().ForEach(server.QueueManager.RegisterPlayer);
-                server.QueueManager.RegisterPlayer(lobby[0]);
+            Lobbies.Remove(lobby.LobbyId);
+
+            foreach (var client in lobby)
+            {
+                if(client.RiptideConnection.IsConnected)
+                    server.QueueManager.RegisterPlayer(client);
             }
         }
     }
