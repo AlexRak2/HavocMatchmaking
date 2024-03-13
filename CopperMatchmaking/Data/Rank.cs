@@ -18,6 +18,14 @@ namespace CopperMatchmaking.Data
         /// Rank id of a client
         /// </summary>
         public byte Id;
+        
+        /// <summary>
+        /// dont use this stupid
+        /// </summary>
+        public Rank()
+        {
+            
+        }
 
         /// <summary>
         /// Creates a new rank id with an enum
