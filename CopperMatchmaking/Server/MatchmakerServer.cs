@@ -23,6 +23,7 @@ namespace CopperMatchmaking.Server
         internal readonly ServerQueueManager QueueManager = null!;
         internal readonly ServerLobbyManager LobbyManager = null!;
         internal readonly ServerHandler Handler;
+        private readonly ServerClientCounter clientCounter;
 
         internal readonly ServerMessageHandlers MessageHandlers;
 
@@ -51,6 +52,7 @@ namespace CopperMatchmaking.Server
             // values
             Handler = handler;
             MessageHandlers = new ServerMessageHandlers(this);
+            clientCounter = new ServerClientCounter(this);
 
             // checks
             if (lobbySize % 2 != 0)
@@ -101,6 +103,7 @@ namespace CopperMatchmaking.Server
 
             // components and crap ig
             UpdateComponents();
+            clientCounter.PlayerCountUpdateCheck();
 
             // networking!
             Server.Update();
