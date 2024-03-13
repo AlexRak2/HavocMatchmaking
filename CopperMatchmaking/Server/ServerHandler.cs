@@ -1,9 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
 using CopperMatchmaking.Data;
-using CopperMatchmaking.Util;
 
 namespace CopperMatchmaking.Server
 {
@@ -39,6 +35,16 @@ namespace CopperMatchmaking.Server
         public virtual int ChooseLobbyHost(List<ConnectedClient> lobbyClients)
         {
             return 0;
+        }
+        
+        /// <summary>
+        /// Function ran when a lobby join code is received
+        /// </summary>
+        /// <param name="lobby">Created lobby</param>
+        /// <param name="lobbyJoinCode">Created lobby join code</param>
+        public virtual void LobbyJoinCodeReceived(CreatedLobby lobby, string lobbyJoinCode)
+        {
+            
         }
     }
 }

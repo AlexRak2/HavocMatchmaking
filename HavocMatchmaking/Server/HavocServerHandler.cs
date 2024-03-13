@@ -25,11 +25,11 @@ public class HavocServerHandler : ServerHandler
 
         return true;
     }
-
-    public override void LobbyCreated(CreatedLobby lobby)
+    
+    public override void LobbyJoinCodeReceived(CreatedLobby lobby, string lobbyJoinCode)
     {
         var steamClients = new List<string>();
         lobby.LobbyClients.ForEach(client => steamClients.Add(client.PlayerId.ToString()));
-        ApiUtil.SendLobbyToWebServer(lobby.LobbyId.ToString(), steamClients);
+        ApiUtil.SendLobbyToWebServer(lobbyJoinCode, steamClients);
     }
 }
