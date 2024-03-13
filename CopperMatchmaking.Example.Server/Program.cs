@@ -8,7 +8,7 @@ public static class Program
 {
     public static void Main()
     {
-        var server = new MatchmakerServer(2)
+        var server = new MatchmakerServer(10)
         {
             new LobbyTimeoutComponent(),
             new InfoLoggerComponent()
