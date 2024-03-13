@@ -14,15 +14,17 @@ namespace CopperMatchmaking.Server
     /// <summary>
     /// 
     /// </summary>
-    public partial class MatchmakerServer : Singleton<MatchmakerServer>
+    public partial class MatchmakerServer
     {
         internal readonly RiptideServer Server = null!;
 
-        internal readonly List<Rank> Ranks = new List<Rank>();
+        internal static readonly List<Rank> Ranks = new List<Rank>();
 
         internal readonly ServerQueueManager QueueManager = null!;
         internal readonly ServerLobbyManager LobbyManager = null!;
         internal readonly ServerHandler Handler;
+
+        internal readonly ServerMessageHandlers MessageHandlers;
 
         /// <summary>
         /// Called when a potential lobby is found
@@ -48,7 +50,7 @@ namespace CopperMatchmaking.Server
         {
             // values
             Handler = handler;
-            SetInstance(this);
+            MessageHandlers = new ServerMessageHandlers(this);
 
             // checks
             if (lobbySize % 2 != 0)
@@ -71,19 +73,17 @@ namespace CopperMatchmaking.Server
 
             // actions
             QueueManager.PotentialLobbyFound += LobbyManager.PotentialLobbyFound;
-            Server.ClientDisconnected += QueueManager.ClientDisconnected;            
+            Server.ClientDisconnected += QueueManager.ClientDisconnected;
             Server.ClientDisconnected += LobbyManager.ClientDisconnected;
-            Server.MessageReceived += ServerMessageHandlers.ServerReceivedMessageHandler;
+            Server.MessageReceived += MessageHandlers.ServerReceivedMessageHandler;
         }
 
         ~MatchmakerServer()
         {
             QueueManager.PotentialLobbyFound -= LobbyManager.PotentialLobbyFound;
-            Server.ClientDisconnected -= QueueManager.ClientDisconnected;            
+            Server.ClientDisconnected -= QueueManager.ClientDisconnected;
             Server.ClientDisconnected -= LobbyManager.ClientDisconnected;
-            Server.MessageReceived -= ServerMessageHandlers.ServerReceivedMessageHandler;
-
-            SetInstance(null);
+            Server.MessageReceived -= MessageHandlers.ServerReceivedMessageHandler;
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace CopperMatchmaking.Server
         /// Get all currently registered ranks
         /// </summary>
         /// <returns>List of all currently registered ranks</returns>
-        public List<Rank> GetAllRanks()
+        public static List<Rank> GetAllRanks()
         {
             return Ranks;
         }
