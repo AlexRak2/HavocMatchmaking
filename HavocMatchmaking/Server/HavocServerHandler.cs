@@ -68,7 +68,8 @@ public class HavocServerHandler : ServerHandler
             var json = JsonConvert.SerializeObject(webhookMessage);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync(webhookUrl, content);
+            var webhookUpdateUrl = $"{webhookUrl}/messages/1217619295245307955";
+            var response = await httpClient.PatchAsync(webhookUpdateUrl, content);
 
             if (!response.IsSuccessStatusCode)
             {
