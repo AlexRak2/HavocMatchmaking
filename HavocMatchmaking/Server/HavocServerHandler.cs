@@ -14,16 +14,9 @@ public class HavocServerHandler : ServerHandler
             return true;
 
         var rank = client.GetRank().Item2;
-        var isAppOwned = client.OwnsApp();
-
-        Log.Info($"Verifying Player | Player Rank: {rank} | Player owns app: {isAppOwned}");
-
-        if (!isAppOwned) return false;
-
-        Console.WriteLine(MatchmakerServer.GetAllRanks()[0]);
+        Log.Info($" Player Rank: {rank}");
 
         client.UpdateRank(Util.ConvertRank(rank));
-
         return true;
     }
 
